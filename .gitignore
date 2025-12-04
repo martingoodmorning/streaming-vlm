@@ -6,7 +6,9 @@ checkpoints/
 *.whl*
 output_image/
 
-
+#文档/视频
+*.md
+*.mp4
 # ---- OS / 编辑器垃圾 ----
 .DS_Store
 Thumbs.db
