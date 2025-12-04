@@ -4,8 +4,8 @@
 Streaming video description + WebVTT subtitle generation
 Run example:
     python streaming_inference.py \
-        --model_path Qwen/Qwen2-VL-7B-Instruct \
-        --video_path demo/sources/howto_fix_laptop_mute_1080p.mp4 \
+        --model_path  /home/sai/.cache/modelscope/hub/models/ChineseAlpacaGroup/Qwen2.5-VL-3B-Instruct-GPTQ-Int4 \
+        --video_path demo/out3.mp4 \
         --output_dir generated_subtitles.vtt
 """
 import torch, functools, os, argparse
@@ -38,7 +38,7 @@ DEFAULT_TEXT_ROUND = 16
 DEFAULT_TEXT_SINK = 512
 DEFAULT_TEXT_SLIDING_WINDOW = 512
 DEFAULT_TEMPERATURE = 0.9
-DEFAULT_REPETITION_PENALTY = 1.05
+DEFAULT_REPETITION_PENALTY = 1.05 # 原livecc默认1.05，这里保持原样
 
 NFRAMES = FPS * DEFAULT_WINDOW_SIZE
 MAX_PIXELS = max(min(VIDEO_MAX_PIXELS, VIDEO_TOTAL_PIXELS / NFRAMES * FRAME_FACTOR), int(VIDEO_MIN_PIXELS * 1.05))
@@ -199,7 +199,7 @@ def streaming_inference(model_path="",
                         text_sliding_window = None,
                         temperature = DEFAULT_TEMPERATURE,
                         duration = TOTAL_VIDEO_DURATION,
-                        query = "Commentate on this match",
+                        query = "简要描述视频内容",
                         repetition_penalty=DEFAULT_REPETITION_PENALTY,
                         quiet=False,
                         emit_json=False,
@@ -430,7 +430,7 @@ def streaming_inference(model_path="",
                 max_new_tokens=MAX_TOKEN_PER_DURATION,
                 use_cache=True,
                 return_dict_in_generate=True,
-                do_sample=True,
+                do_sample=False,
                 repetition_penalty=repetition_penalty,
                 streaming_args=streaming_args,
                 pad_token_id=151645,
@@ -443,7 +443,7 @@ def streaming_inference(model_path="",
                 max_new_tokens=MAX_TOKEN_PER_DURATION,
                 use_cache=True,
                 return_dict_in_generate=True,
-                do_sample=True,
+                do_sample=False,
                 repetition_penalty=repetition_penalty,
                 streaming_args=streaming_args,
                 pad_token_id=151645,
@@ -523,18 +523,18 @@ def streaming_inference(model_path="",
 
 
 if __name__ == "__main__":
-    default_video = "Baidu_NBA_EN/NBA.2015.06.09.Warriors.vs.Cavaliers.720p.HDTV.60fps.x264.mp4"
+    default_video = "demo/out3.mp4"
 
     args = argparse.ArgumentParser()
     args.add_argument("--pos_mode", type=str, default="shrink", choices=["append", "shrink"])
     args.add_argument("--all_text", action="store_true", default=False)
-    args.add_argument("--model_path", type=str, default="mit-han-lab/StreamingVLM")
+    args.add_argument("--model_path", type=str, default="/home/sai/.cache/modelscope/hub/models/ChineseAlpacaGroup/Qwen2.5-VL-3B-Instruct-GPTQ-Int4")
     args.add_argument("--model_base", type=str, choices=["Qwen2_5", "Qwen2", "VILA"], default="Qwen2_5")
     args.add_argument("--video_path", type=str, default=default_video)
     args.add_argument("--window_size", type=int, default=DEFAULT_WINDOW_SIZE)
     args.add_argument("--chunk_duration", type=int, default=DEFAULT_CHUNK_DURATION)
     args.add_argument("--text_round", type=int, default=DEFAULT_TEXT_ROUND)
-    args.add_argument("--previous_text", type=str, default="THis is a video with title 'Golden State Warriors’ BEST PLAYS from the 2024-25 NBA Season'. This is Highlight of Warriors. Curry is going to score a 3-pointer")
+    args.add_argument("--previous_text", type=str, default="这是一段关于宝宝玩玩具的视频，请后续全程用中文进行简短实时解说。")
     args.add_argument("--skip_first_chunk", type=int, default=0)
     args.add_argument("--recompute", action='store_true')
     args.add_argument("--temperature", type=float, default=DEFAULT_TEMPERATURE)

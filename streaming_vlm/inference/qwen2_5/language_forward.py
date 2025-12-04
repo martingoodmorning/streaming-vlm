@@ -4,7 +4,12 @@ import torch
 from typing import Optional, Tuple, List, Union
 from torch.nn import functional as F
 from types import MethodType
-from transformers.models.qwen2_5_vl.modeling_qwen2_5_vl import logger,rotate_half,Cache,BaseModelOutputWithPast,repeat_kv,_flash_attention_forward, StaticCache, SlidingWindowCache, AttentionMaskConverter, make_flex_block_causal_mask, BlockMask
+from transformers.models.qwen2_5_vl.modeling_qwen2_5_vl import logger,rotate_half,Cache,BaseModelOutputWithPast,repeat_kv,_flash_attention_forward, StaticCache, SlidingWindowCache, AttentionMaskConverter, BlockMask
+try:
+    from transformers.models.qwen2_5_vl.modeling_qwen2_5_vl import make_flex_block_causal_mask
+except ImportError:
+    # make_flex_block_causal_mask may not be available in older transformers versions
+    make_flex_block_causal_mask = None
 from streaming_vlm.inference.generate.streaming_cache import StreamingCache
 from streaming_vlm.inference.streaming_args import StreamingArgs
 import math
@@ -331,7 +336,13 @@ def _update_causal_mask(
             return None
         if self.config._attn_implementation == "flex_attention":
             if isinstance(attention_mask, torch.Tensor):
-                attention_mask = make_flex_block_causal_mask(attention_mask)
+                if make_flex_block_causal_mask is not None:
+                    attention_mask = make_flex_block_causal_mask(attention_mask)
+                else:
+                    logger.warning_once(
+                        "make_flex_block_causal_mask is not available in this transformers version. "
+                        "Flex attention may not work correctly. Please upgrade transformers to >= 4.52.0"
+                    )
             return attention_mask
 
         # For SDPA, when possible, we will rely on its `is_causal` argument instead of its `attn_mask` argument, in

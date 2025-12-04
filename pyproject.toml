@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "streaming-vlm"
+version = "0.1.0"
+description = "StreamingVLM: Real-time understanding for infinite video streams"
+readme = "readme.md"
+requires-python = ">=3.8"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "StreamingVLM Contributors"}
+]
+keywords = [
+    "streaming",
+    "video",
+    "vision-language-model",
+    "real-time",
+    "qwen-vl"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: Apache Software License",
+]
+
+# Note: Dependencies are listed in infer_requirements.txt, sft_requirements.txt, etc.
+# Install them separately based on your needs:
+#   pip install -r infer_requirements.txt  # for inference
+#   pip install -r sft_requirements.txt   # for training
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/mit-han-lab/StreamingVLM"
+Repository = "https://github.com/mit-han-lab/StreamingVLM"
+Issues = "https://github.com/mit-han-lab/StreamingVLM/issues"
+
+[tool.setuptools]
+packages = ["streaming_vlm"]
+
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.md", "*.yaml", "*.json"]
+
